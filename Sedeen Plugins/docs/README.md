@@ -13,7 +13,11 @@ Here are the installation instructions and tutorial for the Sedeen plugins in th
         - [**(Optional) Install CUDA for Nvidia GPU Only**](#optional-install-cuda-for-nvidia-gpu-only)
         - [**Supported Image Formats**](#supported-image-formats)
         - [**Create environment variable**](#create-environment-variable)
+        - [**Install Sedeen Plugins**](#install-sedeen-plugins)
     - [**Tutorial**](#tutorial)
+        - [**Open Sedeen Viewer**](#open-sedeen-viewer)
+        - [**ROI Window Classifier**](#roi-window-classifier)
+        - [**ROI Segmentation**](#roi-segmentation)
     - [**User Support**](#user-support)
 
 <!-- /TOC -->
@@ -123,12 +127,77 @@ The path listed beside **cancer_env** is the value you should put in user variab
 <br><br>
 5. Apply this change and reboot your computer.
 
+### **Install Sedeen Plugins**
 
+Copy the folder [ITCR](../ITCR) to `%Sedeen Viewer%\pulgins\cpp`. `%Sedeen Viewer%` is where Sedeen is installed.
+
+<img src="img/plugins.JPG" width="50%" align="middle"/>
+<br><br>
+
+**Now You can start using our plugins.**
+
+<br><br>
 ## **Tutorial**
 
+### **Open Sedeen Viewer**
+To use our plugins in `Sedeen Viewer`, you need to launch Sedeen in the conda environment `cancer_env`. **To make sure the plugins are running successfully, it's highly recommended that you launch a new `Sedeen Viewer` everytime you run a plugin.**
+
+1. Launch command lines with *Win+R*, open **cmd**.
+
+<img src="img/cmd.JPG" width="50%" align="middle"/>
+
+2. Change directory to where Sedeen Viewer is installed by
+
+```
+cd C:\Program Files\Sedeen Viewer
+```
+
+Note that the directory could change, depending on where you install it.
+
+3. Switch to the environment by
+
+```
+conda activate cancer_env
+```
+<img src="img/launch_sedeen.JPG" width="50%" align="middle"/>
+
+4. Open Sedeen Viewer with
+
+```
+sedeen.exe
+```
+
+### **ROI Window Classifier**
+
+1. Open the image you want to process with File->Open.
+
+<img src="img/Open_image.JPG" width="70%" align="middle"/>
+
+2. Select `ROI Window Classifier` from the algorithm option box in `Analysis Manager` window. If the window is not showing, you can go to View->Windows->Analysis Manager to get it displayed.
+
+3. Choose an output path from the `Output Path` box.
+
+<img src="img/alg.JPG" width="70%" align="middle"/>
+
+4. Click `Run` and select [Sedeen_ROIWindowClassifier.py](<../../Sedeen Scripts/Sedeen_ROIWindowClassifier.py>)
+
+<img src="img/ROIWindowClassifier.JPG" width="70%" align="middle"/>
+
+5. If it's the first time you run this image, it may take more than 10 minutes, depending on the memory and CPU capacity.
+
+
+After running the program, Sedeen Viewer would display the ROI identification results where the regions-of-interest are marked in green boxes.
+
+<img src="img/ROIWindowClassifier_result.JPG" width="70%" align="middle"/>
+
+The following files will be generated in the selected folder, which can later be used for ROI segmentation and diagnosis prediction.
+
+<img src="img/ROIWindowClassifier_output.JPG" width="70%" align="middle"/>
+
+### **ROI Segmentation**
 
 
 ## **User Support**
-If you have any questions, you can visit the [Github issue page](https://github.com/kechunl/cancer_diagnosis/issues) and submit an issue via the "New issue" button shown below.
+If you have any questions, you can visit the [Github issue page]https://github.com/kechunl/cancer_diagnosis/issues) and submit an issue via the "New issue" button shown below.
 
 <img src="../../docs/tutorial_img/user_issue.jpg" width="50%" align="middle"/>
