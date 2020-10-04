@@ -12,3 +12,10 @@ output2/*
 *~
 *DS_Store
 *DS_STORE
+
+1_ROI.bat
+2_Semantic_Segmentation.bat
+3_Diagnosis.bat
+Diagnosis.py
+ROISegmentation.py
+ROIWindowClassifier.py
