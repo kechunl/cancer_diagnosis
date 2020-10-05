@@ -18,6 +18,7 @@ Here are the installation instructions and tutorial for the Sedeen plugins in th
         - [**Open Sedeen Viewer**](#open-sedeen-viewer)
         - [**ROI Window Classifier**](#roi-window-classifier)
         - [**ROI Segmentation**](#roi-segmentation)
+        - [**Diagnosis**](#diagnosis)
     - [**User Support**](#user-support)
 
 <!-- /TOC -->
@@ -129,7 +130,7 @@ The path listed beside **cancer_env** is the value you should put in user variab
 
 ### **Install Sedeen Plugins**
 
-Copy the folder [ITCR](../ITCR) to `%Sedeen Viewer Folder%\pulgins\cpp`.
+Copy the folder [ITCR](./ITCR) to `%Sedeen Viewer Folder%\plugins\cpp`.
 
 `%Sedeen Viewer Folder%` is where Sedeen is installed.
 
@@ -181,7 +182,7 @@ sedeen.exe
 
 <img src="docs/img/alg.JPG" width="70%" align="middle"/>
 
-4. Click `Run` and select [Sedeen_ROIWindowClassifier.py](<../../Sedeen Scripts/Sedeen_ROIWindowClassifier.py>)
+4. Click `Run` and select [Sedeen_ROIWindowClassifier.py](<./Sedeen Scripts/Sedeen_ROIWindowClassifier.py>)
 
 <img src="docs/img/ROIWindowClassifier.JPG" width="70%" align="middle"/>
 
@@ -198,13 +199,13 @@ The following files will be generated in the selected folder, which can later be
 
 ### **ROI Segmentation**
 
-1. Open an image in Sedeen Viewer and select `ROI Segmentation` from the algorithm option box.
+1. Open an image in Sedeen Viewer and select `ROI Semantic Segmentation` from the algorithm option box. The image could be random as it's only for enabling the algorithm part.
 
 2. Select one or more ROI images. Hold the “Control” key if you want to select multiple files, which is the standard multi-file selection in Windows OS. 
     
     You can also change the parameter for “Batch Size” by using the slider, where the batch size is a term used in machine learning and refers to the number of samples processed in one iteration. When the computer has lots of memory or a large GPU, you can use a larger batch size. Usually, large batch size can make the CNN runs faster, but a large batch size would require lots of memory. We recommend to you the default setting unless your computer memory is too low or too high. If you saw any kind of memory error printed by the GUI, then restart the process with smaller batch size.
 
-3. Click `Run` and select [Sedeen_ROISegmentation.py](<../../Sedeen Scripts/Sedeen_ROISegmentation.py>).
+3. Click `Run` and select [Sedeen_ROISegmentation.py](<./Sedeen Scripts/Sedeen_ROISegmentation.py>).
 
     Depends on your computer hardware (memory, GPU, etc) and the size of ROI, it usually takes 2 to 20 minutes to process each ROI on a GPU. CPUs are usually more than 10x slower than GPUs for deep learning, and we do not recommend users to use CPU for this step (i.e. ROI segmentation).
 
@@ -212,6 +213,19 @@ The following files will be generated in the selected folder, which can later be
 
     <img src="docs/tutorial_img/seg_color_map.png" width="50%" align="middle"/>
 
+4. After running the program, a result panel will pop up, showing the segmentation results and the results in superpixels. You can click "Previous" or "Next" to view the corresponding segmentations of the selected images.
+
+### **Diagnosis**
+
+1. Open an image in Sedeen Viewer and select `ROI Diagnosis` from the algorithm option box. The image could be random as it's only for enabling the algorithm part.
+
+2. Select the CSV files generated from the previous step (i.e. ROI Segmentation).
+
+3. Click `Run` and select [Diagnosis.py](<./Sedeen Scripts/Sedeen_Diagnosis.py>).
+
+    Note that this step is super fast, and you should see the the diagnosis prediction in the result panel in a short time.
+
+<img src="docs/img/diagnosis_result.jpg" width="50%" align="middle"/>
 
 ## **User Support**
 If you have any questions, you can visit the [Github issue page]https://github.com/kechunl/cancer_diagnosis/issues) and submit an issue via the "New issue" button shown below.
