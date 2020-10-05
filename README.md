@@ -53,8 +53,8 @@ The unzipped folder can either be named as "cancer_diagnosis" or "cancer_diagnos
 You need to install Python and dependencies required to run the provided package. We use Anaconda to manage Python dependencies, and you can download the latest version of Anaconda with Python 3.6 or 3.7 from 
 <a href="https://www.anaconda.com/distribution/" target="_blank">here</a> .
 
-You should follow the instructions as shown in the screenshots below. Pay attention to the buttons marked with red ink.
-Installing Anaconda for all users to the "C:/ProgramData/Anaconda3/" path can make the program running smoothly.
+You should follow the instructions as shown in the screenshots below. **Pay attention to the buttons marked with red ink.
+Installing Anaconda for all users to the "C:/ProgramData/Anaconda3/" path can make the program running smoothly.**
 
 <!-- <img src="docs/tutorial_img/anaconda_1.JPG" width="50%" align="middle"/> 	 -->
 <img src="docs/tutorial_img/anaconda_2.JPG" width="50%" align="middle"/>
