@@ -114,7 +114,7 @@ Variable name: SedeenPythonHome
 Variable value: "Full path of cancer_env"
 ```
 
-Note that the path of **cancer_env** is usually *C:\Uses\%Username%\.conda\envs\cancer_env*. If you're not sure where the conda env is, you can launch the command lines by *Win+R*, open **cmd**, and run 
+Note that the path of **cancer_env** is usually *C:\Users\%Username%\.conda\envs\cancer_env*. If you're not sure where the conda env is, you can launch the command lines by *Win+R*, open **cmd**, and run 
 
 ```
 conda env list
