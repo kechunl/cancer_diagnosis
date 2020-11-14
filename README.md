@@ -225,7 +225,7 @@ The following files will be generated in the selected folder, which can later be
 
     Note that this step is super fast, and you should see the the diagnosis prediction in the result panel in a short time.
 
-<img src="docs/img/diagnosis_result.jpg" width="50%" align="middle"/>
+<img src="docs/img/diagnosis_result.JPG" width="50%" align="middle"/>
 
 ## **User Support**
 If you have any questions, you can visit the [Github issue page]https://github.com/kechunl/cancer_diagnosis/issues) and submit an issue via the "New issue" button shown below.
