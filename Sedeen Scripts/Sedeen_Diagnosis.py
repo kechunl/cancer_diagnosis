@@ -1,6 +1,7 @@
 import sys
 sys.path.append('../')
-from utils.mid_level_feature_classifier import classify_files
+import utils.mid_level_feature_classifier as mlfc
+import utils.structure_features_classifier as sfc
 
 import numpy as np
 import pickle
@@ -13,21 +14,25 @@ class Diagnosis:
 	"""
 	class Predict Diagnosis for ROIs.
 	"""
-
 	def __init__(self, pathtofeature):
 		self._feature_path = pathtofeature
-		self._model_path = "../models/mid_level_classifier_weights.pickle"
-
+		assert type(pathtofeature) is list
 
 	def run(self):
-		model = pickle.load(open(self._model_path, "rb"))
-		csv_paths = self._feature_path
 
-		results = {}
+#		results = {}
+#		pdb.set_trace()
 		rst_txt = "Classification All Done!\n\n"
 		preds = []
 
-		rst = classify_files(model, csv_paths)
+		if self._feature_path[0].endswith(".csv"):   
+			self._model_path = "../models/mid_level_classifier_weights.pickle"
+			model = pickle.load(open(self._model_path, "rb"))
+			rst = mlfc.classify_files(model, self._feature_path)
+		else:
+			self._model_path = "../models/structure_weights.pickle"
+			model = pickle.load(open(self._model_path, "rb"))
+			rst = sfc.classify_files(model, self._feature_path)
 
 		for k in rst.keys():
 			pred, pred_label = rst[k]
@@ -39,7 +44,14 @@ class Diagnosis:
 
 		return rst_txt.encode()
 
-# paths = ['C:/ITCR/cancer_diagnosis-master/output/1180_copy_0_SuperpixelCooccurrence.csv','C:/ITCR/cancer_diagnosis-master/output/1180_copy_1_SuperpixelCooccurrence.csv']
-# pred = Diagnosis(paths)
-# result = pred.run()
-# print(result)
+if __name__ == "__main__":
+    pass
+    paths = [
+#             'C:/Users/beibi/Desktop/ITCR/cancer_diagnosis/data/1180_copy_0_SuperpixelCooccurrence.csv',
+#              'C:/Users/beibi/Desktop/ITCR/cancer_diagnosis/data/1180_copy_1_SuperpixelCooccurrence.csv',
+             'C:/Users/lkchu/Desktop/ITCR/cancer_diagnosis/output/1180_crop_0_seg_label.png'
+             ]
+    pred = Diagnosis(paths)
+
+    result = pred.run()
+    print(result)
