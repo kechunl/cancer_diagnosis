@@ -2,7 +2,7 @@ import os
 import sys
 sys.path.append(os.path.dirname(__file__))
 from cascade_ml import run_model
-from structure_features import structure_features_for_roi
+from structure_features import structure_features_for_roi, test_plot
 
 
 import numpy as np
@@ -37,19 +37,10 @@ def get_features(roi_img_path, mask_img_path, out_dir, min_duct_size=50):
     img = np.array(img)
     mask = Image.open(mask_img_path)
     mask = np.array(mask).astype(np.uint8)
-    
-    
+
     of = roi_img_path.replace(".jpg", "_structure_features.csv")
     
-    if os.path.exists(of):
-        print("Use existing structure features")
-        text = open(of, "r").read()        
-        data = text.split("\n")[1:]
-        data = [_ for _ in data if len(_) > 10]
-        data = ["[" + _ + "]" for _ in data]
-        data = [eval(_) for _ in data]
-        data = np.array(data)
-    else:
+    if not os.path.exists(of):
         print("Calculating structure features. This may take few minutes.")
         feats = structure_features_for_roi(img, mask, nlayers=N_LAYERS, 
                                        n_seg_cls=N_SEG_CLS, 
@@ -60,9 +51,15 @@ def get_features(roi_img_path, mask_img_path, out_dir, min_duct_size=50):
         f.write(str(feats[0]) + "\n")
         for duct_info in feats[1]:
             f.write(",".join([str(_) for _ in duct_info]) + "\n")
-        f.close()
-
-        data = np.array(feats[1:]) # each element is the feature for 1 duct
+        f.close()        
+        
+    print("Loading structure features")
+    text = open(of, "r").read()        
+    data = text.split("\n")[1:]
+    data = [_ for _ in data if len(_) > 10]
+    data = ["[" + _ + "]" for _ in data]
+    data = [eval(_) for _ in data]
+    data = np.array(data)
 
     size_per_duct = np.sum(data, axis=1)
     # Get ducts with proper size

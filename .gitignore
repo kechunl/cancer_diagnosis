@@ -19,3 +19,6 @@ output2/*
 Diagnosis.py
 ROISegmentation.py
 ROIWindowClassifier.py
+
+data/*
+*/Exception Log/*

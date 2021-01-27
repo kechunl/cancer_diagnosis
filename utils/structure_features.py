@@ -14,16 +14,25 @@ import cv2
 import numpy as np
 
 import matplotlib
-if sys.platform.find("win") < 0:
-    # not windows
-    matplotlib.use("agg")
+
+matplotlib.use("agg") # avoid QT error
+
 import matplotlib.pyplot as plt
 from copy import deepcopy
 
 import random
 import pdb
 import time
-import tqdm
+import datetime
+
+VIZ = True
+
+
+def test_plot(imgpath):
+    plt.plot([1,2,3], [1,2,3])
+    plt.title("Test")
+    plt.savefig(imgpath)
+
 
 def find_ducts_from_semantic(mask, duct_cls=[1, 2, 5, 7], out_name=None):
     """
@@ -96,7 +105,7 @@ def get_sp_ids_at_border(binary_mask, sp_mask):
     # Note that there should be only 1 contours in this case, because we already
     # filled the mask with holes
     hull = [cv2.convexHull(_, False) for _ in contours]
-    if len(hull) > 1:
+    if len(hull) > 1 and VIZ:
         print("More than 1 contour/hull found!!!")
         plt.imshow(filled_mask)
         plt.show()
@@ -117,59 +126,6 @@ def get_sp_ids_at_border(binary_mask, sp_mask):
     sp_ids = list(set(sp_ids))
     
     return sp_ids
-
-
-
-#def get_layers_from_duct_with_distance_threshold(known_sps, sp_label, neighbours):
-#    """
-#    Get the inner and outer layer from the known superpixels. The algorithm
-#    is straightforward: 
-#        1. find all unknown neighours of the known superpixels. 
-#        2. for each neighbour, it is in inner layer if it is closer to the duct center;
-#           otherwise, it is in outer layer.
-#    
-#    Note: this function will be called multiple times in get_all_layers
-#    
-#    Args:
-#        known_sps (list): a list of superpixel ID, which are known superpixels
-#            around the duct
-#        sp_label (np.array): an array with shape [h, w] where each pixel is the
-#            corresponding superpixel ID
-#        neighbours (dict): a dictionary that stores the information of neighbourhood.
-#            
-#    Output:
-#        inner_layer (list): a list of cluster ID which lies one layer inside
-#            the known superpixels
-#        outer_layer (list): a list of cluster ID which lies one layer outside 
-#            the known superpixels.
-#    """
-#    # Get the (binary) mask for known super pixels
-#    binary_mask = np.zeros(sp_label.shape, dtype=np.uint8)
-#    for cls_id in known_sps:
-#        binary_mask += sp_label == cls_id 
-##    binary_mask = binary_mask > 0
-#    binary_mask[binary_mask > 0] = 255
-#    
-#
-#    edges = cv2.Canny(binary_mask, 100,200)
-#    # the return result (pixels) in the Canny edge are not in the binary mask (with True value)
-#    
-#
-#    ret, labels = cv2.connectedComponents(edges.astype(np.uint8))
-#    
-#    plt.cla(); plt.clf()
-#    plt.imshow(labels)
-#    plt.show()
-#
-#    pdb.set_trace()
-#
-#    # Store results
-#    inner_layer = set()
-#    outer_layer = set()
-#    
-#                    
-#
-#    return list(inner_layer), list(outer_layer)
 
 def get_layers_from_duct(known_sps, sp_label, neighbours):
     """
@@ -297,20 +253,24 @@ def structure_features_for_duct(rgb_img, seg_mask, duct_mask,
 #    print(time.ctime(), "begin slic", rgb_img.shape)
     h, w, _ = rgb_img.shape
     num_segs = int(h * w / num_pixels_per_seg)
+    open(viz_name + ".log", "w").write("%s: Begin the Duct\n" % str(datetime.datetime.now()))
+
     sp_mask = slic(rgb_img, n_segments=num_segs)
 #    print(time.ctime(), "end slic")
     neighs = neighbours(sp_mask) # dictioary of neighbours
     sp_ids = get_sp_ids_at_border(duct_mask, sp_mask)
+    open(viz_name + ".log", "a").write("%s: SLIC finished\n" % str(datetime.datetime.now()))
     
     layers = get_all_layers_for_one_duct(sp_ids, sp_mask, neighs, nlayers=5)    
 #    print(time.ctime(), "end getting layers")
-    
+    open(viz_name + ".log", "a").write("%s: Layers Got!\n" % str(datetime.datetime.now()))
     
     features = []
     sp_id_to_seg_cls = assign_sp_cls(sp_mask, seg_mask)
     
     for layer in layers:
         counts = [0] * n_seg_cls
+        open(viz_name + ".log", "a").write("%s: Layer: %s\n" % (str(datetime.datetime.now()), str(layer)))
         for sp in layer:
             cls_id = sp_id_to_seg_cls[sp]
             counts[cls_id] += 1        
@@ -320,34 +280,34 @@ def structure_features_for_duct(rgb_img, seg_mask, duct_mask,
 
 
     
-    if viz_name is not None:
-#        plt.show()
-        # Viz for Debug
-        plt.cla(); plt.clf(); # must need to clean it to save memory and speed before every plots
-        plt.subplot(1, 4, 1)
-        plt.imshow(rgb_img)
-        plt.subplot(1, 4, 2)
-        plt.imshow(duct_mask)
+    try:
+        if VIZ and viz_name is not None:
+    #        plt.show()
+            # Viz for Debug
+            plt.cla(); plt.clf(); # must need to clean it to save memory and speed before every plots
+            plt.subplot(1, 4, 1)
+            plt.imshow(rgb_img)
+            plt.subplot(1, 4, 2)
+            plt.imshow(duct_mask)
+            
+            viz_mask = np.zeros(sp_mask.shape, dtype=np.uint8)
+            for idx in sp_ids:
+                locs = sp_mask == idx
+                viz_mask[locs] = 1
+            plt.subplot(1, 4, 3)
+            plt.imshow(viz_mask)
+            
+            viz = np.zeros(sp_mask.shape, dtype=np.uint8)
+            for layer_id in range(len(layers)):
+                for sp in layers[layer_id]:
+                    viz[sp_mask == sp] = layer_id + 1 # use zero for background
+            plt.subplot(1, 4, 4)
+            plt.imshow(viz, vmin=1, vmax=nlayers * 2 + 1, cmap="Set3")
+    
+            plt.savefig(viz_name, bbox_inches="tight", dpi=300)
         
-        viz_mask = np.zeros(sp_mask.shape, dtype=np.uint8)
-        for idx in sp_ids:
-            locs = sp_mask == idx
-            viz_mask[locs] = 1
-        plt.subplot(1, 4, 3)
-        plt.imshow(viz_mask)
-        
-        viz = np.zeros(sp_mask.shape, dtype=np.uint8)
-        for layer_id in range(len(layers)):
-            for sp in layers[layer_id]:
-                viz[sp_mask == sp] = layer_id + 1 # use zero for background
-        plt.subplot(1, 4, 4)
-        plt.imshow(viz, vmin=1, vmax=nlayers * 2 + 1, cmap="Set3")
-
-        plt.savefig(viz_name, bbox_inches="tight", dpi=300)
-        
- 
-#        print(time.ctime(), "end Viz")
-
+    except:
+        pass
     # Get features from the layers
 
 
@@ -398,8 +358,13 @@ def structure_features_for_roi(rgb_img, seg_mask, nlayers=5, n_seg_cls=8,
     THRESHOLD_SMALLEST_DUCT = num_pixels_per_seg * nlayers * 2
     
     duct_sizes = []
+    
+    logname = duct_label_name + ".log"
+    open(logname, "w").write("%s: Begin\n" % str(datetime.datetime.now()))
 
-    for duct_id in tqdm.tqdm(range(1, np.max(ducts))):
+
+    for duct_id in range(1, np.max(ducts)):
+        open(logname, "a").write("%s: Begin process %d (of %d)\n" % (str(datetime.datetime.now()), duct_id, np.max(ducts)))
         binary = ducts == duct_id
 
         duct_sizes.append(np.sum(binary))
@@ -432,9 +397,11 @@ def structure_features_for_roi(rgb_img, seg_mask, nlayers=5, n_seg_cls=8,
         features_all.append(feature)
     
 
+    open(logname, "a").write("%s: Finished Process!\n" % str(datetime.datetime.now()))
+
     try:
 
-        if viz_name is not None:
+        if VIZ and viz_name is not None:
             plt.cla(); plt.clf();
             plt.hist(duct_sizes)
             plt.axvline(THRESHOLD_SMALLEST_DUCT, color="k")
@@ -442,7 +409,8 @@ def structure_features_for_roi(rgb_img, seg_mask, nlayers=5, n_seg_cls=8,
             plt.savefig(viz_name.replace(".png", "_duct_size_hist.png"))
     except Exception as e:
         print(e)
-            
+
+    open(logname, "a").write("%s: Features All: %s\n" % (str(datetime.datetime.now()), str(features_all)))
     print(features_all)
     features_all = np.array(features_all)    
     features = np.sum(features_all, axis=0)        
